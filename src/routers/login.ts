@@ -12,13 +12,18 @@ LoginRouter.post("/", auth, validate({ body: LoginSchema }), async (req, res) =>
     const token = randomBytes(32).toString("hex");
 
     // register the session for the user
-    await database.session.create({
+    const session = await database.session.create({
         data: {
             id: token,
             userId: res.locals.session.userId
+        },
+        include: {
+            user: {
+                select: { name: true, email: true }
+            }
         }
     })
 
     // return the token to frontend, to store it in local storage
-    return res.json({ token });
+    return res.json(session.user)
 })
