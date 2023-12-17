@@ -24,6 +24,6 @@ LoginRouter.post("/", auth, validate({ body: LoginSchema }), async (req, res) =>
         }
     })
 
-    // return the token to frontend, to store it in local storage
+    // return the user
     return res.json(session.user)
 })
