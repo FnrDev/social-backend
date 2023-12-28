@@ -8,11 +8,9 @@ export default async function auth(req: Request, res: Response, next: NextFuncti
     // get the session from redis cache first
     const cachedSession = await redis.get(`session_${req.headers.authorization}`);
 
-    console.log(cachedSession);
-
     // session found in redis
     if (cachedSession) {
-        res.locals.session = cachedSession
+        res.locals.session = JSON.parse(cachedSession);
         return next();
     }
 
@@ -28,7 +26,7 @@ export default async function auth(req: Request, res: Response, next: NextFuncti
     if (!session) return res.status(401).json({ error: true, message: "Wrong authorization" });
     
     // session founded in database store in redis cache
-    await redis.set(`session_${req.headers.authorization}`, JSON.stringify(session), { ex: 3600 });
+    await redis.set(`session_${req.headers.authorization}`, JSON.stringify(session), "EX", 3600);
     // store session in express locals
     res.locals.session = session;
     return next();
