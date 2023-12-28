@@ -3,25 +3,46 @@ import { PostsSchema } from '../validations/posts'
 import validate from '../middlewares/validate';
 import { database } from '../base/prisma';
 import auth from '../middlewares/auth';
+import S3 from 'aws-sdk/clients/s3';
+import { randomUUID } from 'crypto';
+import fileUpload from 'express-fileupload';
 export const PostsRouter = Router();
 
+const bucket = new S3({
+    endpoint: process.env.AWS_S3_ENDPOINT,
+    region: "auto"
+})
+
 PostsRouter.post("/:id", auth, validate({ body: PostsSchema }), async (req, res) => {
-    const { description, file } = req.body;
+    // validations to check if file in body
+    if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).json({ error: true, message: "no file provided" });
+    }
+    const file = req.files.file as fileUpload.UploadedFile;
+    if ("mimetype" in file && !file.mimetype.includes("image")) {
+        return res.status(400).json({ error: true, message: "file type not supported" });
+    }
 
-    // TODO: upload image to aws S3, and get the id of uploaded file
-    const aws = { id: "237-fdklsjgld-23987", file }
+    const { description } = req.body;
+    const objectId = randomUUID();
 
-    const [_, createdPost] = await Promise.all([
+    const [_, __, createdPost] = await Promise.all([
+        bucket.putObject({
+            Bucket: "authy",
+            Key: objectId,
+            Body: file.data,
+            ContentType: file.mimetype
+        }).promise(),
         database.media.create({
             data: {
-                id: aws.id,
+                id: objectId,
                 userId: res.locals.session.userId,
                 postId: req.params.id
             }
         }),
         database.post.create({
             data: {
-                id: aws.id,
+                id: objectId,
                 description,
                 userId: res.locals.session.userId
             }
