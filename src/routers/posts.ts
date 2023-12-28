@@ -53,11 +53,15 @@ PostsRouter.post("/:id", auth, validate({ body: PostsSchema }), async (req, res)
 });
 
 PostsRouter.delete("/:id", auth, async (req, res) => {
-    const userPosts = await database.post.findUnique({
+    const post = await database.post.findUnique({
         where: { id: req.params.id }
     });
-    if (!userPosts) {
-        return res.status(401).json({ error: true, message: "forbidden" });
+    if (!post) {
+        return res.sendStatus(404);
+    }
+
+    if (post.userId !== res.locals.session.userId) {
+        return res.status(403).json({ error: true, message: "forbidden" });
     }
 
     await Promise.all([
@@ -65,7 +69,7 @@ PostsRouter.delete("/:id", auth, async (req, res) => {
             where: { id: req.params.id }
         }),
         database.media.delete({
-            where: { id: userPosts.id }
+            where: { id: post.id }
         })
     ]);
 
