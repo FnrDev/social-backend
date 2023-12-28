@@ -5,6 +5,7 @@ import cors from 'cors';
 import { LogoutRouter } from './routers/logout';
 import { SignUpRouter } from './routers/signup';
 import { PostsRouter } from './routers/posts';
+import { CommentsRouter } from './routers/comments';
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.use("/login", LoginRouter);
 app.use("/signup", SignUpRouter);
 app.use("/logout", LogoutRouter);
 app.use("/posts", PostsRouter);
+app.use("/comments", CommentsRouter);
 
 app.listen(process.env.PORT, () => console.log(`Backend is ready at port ${process.env.PORT}`));

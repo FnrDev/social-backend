@@ -32,7 +32,7 @@ PostsRouter.post("/:id", auth, validate({ body: PostsSchema }), async (req, res)
 });
 
 PostsRouter.delete("/:id", auth, async (req, res) => {
-    const userPosts = await database.post.findFirst({
+    const userPosts = await database.post.findUnique({
         where: { id: req.params.id }
     });
     if (!userPosts) {
