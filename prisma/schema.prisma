@@ -15,7 +15,7 @@ model User {
   id       String    @id @default(uuid())
   name     String
   email    String   @unique
-  password String
+  phone_number    String    @unique
   createdAt   DateTime    @default(now())
   Session  Session[]
   posts   Post[]

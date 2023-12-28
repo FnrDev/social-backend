@@ -10,10 +10,12 @@ export const PostsRouter = Router();
 
 const bucket = new S3({
     endpoint: process.env.AWS_S3_ENDPOINT,
-    region: "auto"
+    signatureVersion: "v4",
+    secretAccessKey: process.env.AWS_S3_SECRET,
+    accessKeyId: process.env.AWS_S3_ACCESS_KEY
 })
 
-PostsRouter.post("/:id", auth, validate({ body: PostsSchema }), async (req, res) => {
+PostsRouter.post("/", auth, validate({ body: PostsSchema }), async (req, res) => {
     // validations to check if file in body
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).json({ error: true, message: "no file provided" });
@@ -37,7 +39,7 @@ PostsRouter.post("/:id", auth, validate({ body: PostsSchema }), async (req, res)
             data: {
                 id: objectId,
                 userId: res.locals.session.userId,
-                postId: req.params.id
+                postId: objectId
             }
         }),
         database.post.create({

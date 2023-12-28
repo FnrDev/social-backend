@@ -6,11 +6,13 @@ export default async function auth(req: Request, res: Response, next: NextFuncti
     if (!req.headers.authorization) return res.status(401).json({ error: true, message: "require authorization" });
 
     // get the session from redis cache first
-    const cachedSession: string | null = await redis.get(`session_${req.headers.authorization}`);
+    const cachedSession = await redis.get(`session_${req.headers.authorization}`);
+
+    console.log(cachedSession);
 
     // session found in redis
     if (cachedSession) {
-        res.locals.session = JSON.parse(cachedSession);
+        res.locals.session = cachedSession
         return next();
     }
 

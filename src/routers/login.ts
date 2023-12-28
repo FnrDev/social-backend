@@ -3,27 +3,27 @@ import { randomBytes } from 'node:crypto'
 import validate from '../middlewares/validate';
 import { LoginSchema } from '../validations/login';
 import { database } from '../base/prisma';
-import auth from '../middlewares/auth';
 
 export const LoginRouter = Router();
 
-LoginRouter.post("/", auth, validate({ body: LoginSchema }), async (req, res) => {
+LoginRouter.post("/", validate({ body: LoginSchema }), async (req, res) => {
     // create a session token
     const token = randomBytes(32).toString("hex");
 
-    // register the session for the user
-    const session = await database.session.create({
-        data: {
-            id: token,
-            userId: res.locals.session.userId
+    // upsert the user
+    const user = await database.user.upsert({
+        where: { phone_number: req.body.phone_number },
+        create: {
+            phone_number: req.body.phone_number,
+            email: req.body.email,
+            name: req.body.name
         },
-        include: {
-            user: {
-                select: { name: true, email: true }
-            }
-        }
-    })
+        update: {},
+    });
 
-    // return the user
-    return res.json(session.user)
+    await database.session.create({
+        data: { id: token, userId: user.id }
+    });
+
+    return res.json({ token });
 })
