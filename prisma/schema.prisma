@@ -16,7 +16,11 @@ model User {
   name     String
   email    String   @unique
   password String
+  createdAt   DateTime    @default(now())
   Session  Session[]
+  posts   Post[]
+  comments    Comments[]
+  media   Media[]
 
   @@map(name: "users")
 }
@@ -28,4 +32,37 @@ model Session {
   last_visit    DateTime    @default(now())
 
   @@map(name: "sessions")
+}
+
+model Post {
+  id    String    @id
+  userId    String
+  user    User  @relation(fields: [userId], references: [id])
+  description   String    @db.VarChar(255)
+  likes   Int   @default(0)
+  createdAt   DateTime    @default(now())
+
+	@@map(name: "posts")
+}
+
+model Comments {
+  id    String    @id   @default(uuid())
+  postId    String
+  userId    String
+  user    User    @relation(fields: [userId], references: [id])
+  content   String    @db.VarChar(255)
+  likes   Int   @default(0)
+  createdAt   DateTime    @default(now())
+
+  @@map(name: "comments")
+}
+
+model Media {
+  id    String    @id
+  userId    String
+  user    User    @relation(fields: [userId], references: [id])
+  createdAt   DateTime    @default(now())
+  postId    String
+
+  @@map(name: "media")
 }
