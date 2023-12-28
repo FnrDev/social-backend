@@ -29,4 +29,24 @@ PostsRouter.post("/:id", auth, validate({ body: PostsSchema }), async (req, res)
     ]);
 
     return res.json(createdPost);
+});
+
+PostsRouter.delete("/:id", auth, async (req, res) => {
+    const userPosts = await database.post.findFirst({
+        where: { id: req.params.id }
+    });
+    if (!userPosts) {
+        return res.status(401).json({ error: true, message: "forbidden" });
+    }
+
+    await Promise.all([
+        database.post.delete({
+            where: { id: req.params.id }
+        }),
+        database.media.delete({
+            where: { id: userPosts.id }
+        })
+    ]);
+
+    return res.sendStatus(200);
 })
