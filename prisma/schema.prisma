@@ -37,7 +37,7 @@ model Session {
 model Post {
   id    String    @id
   userId    String
-  user    User  @relation(fields: [userId], references: [id])
+  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   description   String    @db.VarChar(255)
   likes   Int   @default(0)
   createdAt   DateTime    @default(now())
@@ -49,7 +49,7 @@ model Comments {
   id    String    @id   @default(uuid())
   postId    String
   userId    String
-  user    User    @relation(fields: [userId], references: [id])
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   content   String    @db.VarChar(255)
   likes   Int   @default(0)
   createdAt   DateTime    @default(now())
@@ -60,9 +60,8 @@ model Comments {
 model Media {
   id    String    @id
   userId    String
-  user    User    @relation(fields: [userId], references: [id])
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime    @default(now())
-  postId    String
 
   @@map(name: "media")
 }

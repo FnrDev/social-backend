@@ -40,7 +40,6 @@ PostsRouter.post("/", auth, validate({ body: PostsSchema }), async (req, res) =>
             data: {
                 id: objectId,
                 userId: res.locals.session.userId,
-                postId: objectId
             }
         }),
         database.post.create({
