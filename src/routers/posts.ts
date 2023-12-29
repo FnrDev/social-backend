@@ -33,7 +33,8 @@ PostsRouter.post("/", auth, validate({ body: PostsSchema }), async (req, res) =>
             Bucket: "authy",
             Key: objectId,
             Body: file.data,
-            ContentType: file.mimetype
+            ContentType: file.mimetype,
+            Metadata: { userId: res.locals.session.userId }
         }).promise(),
         database.media.create({
             data: {
@@ -72,7 +73,8 @@ PostsRouter.delete("/:id", auth, async (req, res) => {
         }),
         database.media.delete({
             where: { id: post.id }
-        })
+        }),
+        bucket.deleteObject({ Bucket: "authy", Key: post.id }).promise()
     ]);
 
     return res.sendStatus(200);
