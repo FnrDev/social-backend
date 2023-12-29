@@ -12,56 +12,56 @@ datasource db {
 }
 
 model User {
-  id       String    @id @default(uuid())
-  name     String
-  email    String   @unique
-  phone_number    String    @unique
-  createdAt   DateTime    @default(now())
-  Session  Session[]
-  posts   Post[]
-  comments    Comments[]
-  media   Media[]
+  id           String     @id @default(uuid())
+  name         String
+  email        String     @unique
+  phone_number String     @unique
+  createdAt    DateTime   @default(now())
+  Session      Session[]
+  posts        Post[]
+  comments     Comments[]
+  media        Media[]
 
   @@map(name: "users")
 }
 
 model Session {
-  id     String @id @db.VarChar(250)
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-  last_visit    DateTime    @default(now())
+  id         String   @id @db.VarChar(250)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  last_visit DateTime @default(now())
 
   @@map(name: "sessions")
 }
 
 model Post {
-  id    String    @id
-  userId    String
-  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  description   String    @db.VarChar(255)
-  likes   Int   @default(0)
-  createdAt   DateTime    @default(now())
+  id          String   @id
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  description String   @db.VarChar(255)
+  likes       Int      @default(0)
+  createdAt   DateTime @default(now())
 
-	@@map(name: "posts")
+  @@map(name: "posts")
 }
 
 model Comments {
-  id    String    @id   @default(uuid())
+  id        String   @id @default(uuid())
   postId    String
   userId    String
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  content   String    @db.VarChar(255)
-  likes   Int   @default(0)
-  createdAt   DateTime    @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String   @db.VarChar(255)
+  likes     Int      @default(0)
+  createdAt DateTime @default(now())
 
   @@map(name: "comments")
 }
 
 model Media {
-  id    String    @id
+  id        String   @id
   userId    String
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime    @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 
   @@map(name: "media")
 }
