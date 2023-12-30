@@ -15,6 +15,15 @@ const bucket = new S3({
     accessKeyId: process.env.AWS_S3_ACCESS_KEY
 })
 
+PostsRouter.get("/", auth, async (req, res) => {
+    const userPosts = await database.post.findMany({
+        where: { userId: res.locals.session.userId },
+    });
+    const postsIds = userPosts.map(post => post.id);
+
+    return res.json(postsIds.map(id => `https://fnrdev.tech/authy/${id}`));
+})
+
 PostsRouter.post("/", auth, validate({ body: PostsSchema }), async (req, res) => {
     // validations to check if file in body
     if (!req.files || Object.keys(req.files).length === 0) {
