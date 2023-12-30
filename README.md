@@ -12,6 +12,8 @@ Authy is a Node.js authentication server that leverages Express.js for handling 
 
 - **Zod Validations**: Employs Zod for input validations, ensuring that incoming data adheres to defined schemas, enhancing security and data integrity.
 
+- **AWS S3 Integration**: Supports image posts by leveraging AWS S3 for efficient storage and retrieval of images.
+
 ## Getting Started 🚦
 
 ### Prerequisites
@@ -44,12 +46,23 @@ Before running the Authy server, ensure you have the following installed:
     ```env
     PORT=3000
     REDIS_URL=redis://localhost:6379
-    POSTGRES_URL=postgresql://user:password@localhost:5432/database
+    POSTGRES_PRISMA_URL=postgresql://user:password@localhost:5432/database
+    POSTGRES_URL_NON_POOLING=postgresql://user:password@localhost:5432/database
+    AWS_S3_ENDPOINT="https://da445ff826f532cb7d62d370a154c8ec.r2.cloudflarestorage.com/authy"
+    AWS_S3_TOKEN="Your aws s3 token"
+    AWS_S3_SECRET="Your aws s3 secret"
+    AWS_S3_ACCESS_KEY="Your aws s3 access key"
     ```
 
     Adjust the values based on your local setup.
 
-4. Run the server:
+4. Compile TypeScript to JavaScript:
+
+    ```bash
+    npm run build
+    ```
+
+5. Run the server:
 
     ```bash
     npm start
