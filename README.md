@@ -1,7 +1,6 @@
 # Authy 🛡️
 
-Authy is a Node.js authentication server that leverages Express.js for handling HTTP requests, Redis for caching, Prisma as the ORM for database interactions, and Zod for input validations.
-
+Authy is a Node.js authentication server that leverages Express.js for handling HTTP requests, Redis for caching, Prisma as the ORM for database interactions, Zod for input validations, and supports image posts using Amazon AWS S3.
 ## Features 🚀
 
 - **Express Server**: Authy is built on top of the Express.js framework, providing a robust and scalable foundation for handling HTTP requests.
