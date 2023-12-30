@@ -48,7 +48,7 @@ Before running the Authy server, ensure you have the following installed:
     REDIS_URL=redis://localhost:6379
     POSTGRES_PRISMA_URL=postgresql://user:password@localhost:5432/database
     POSTGRES_URL_NON_POOLING=postgresql://user:password@localhost:5432/database
-    AWS_S3_ENDPOINT="https://da445ff826f532cb7d62d370a154c8ec.r2.cloudflarestorage.com/authy"
+    AWS_S3_ENDPOINT="Your aws s3 endpoint"
     AWS_S3_TOKEN="Your aws s3 token"
     AWS_S3_SECRET="Your aws s3 secret"
     AWS_S3_ACCESS_KEY="Your aws s3 access key"
