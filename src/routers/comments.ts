@@ -57,6 +57,28 @@ CommentsRouter.post("/:id/:commentId/likes", auth, async (req, res) => {
     return res.json(updated);
 });
 
+CommentsRouter.delete("/:id/:commentId/unlike", auth, async (req, res) => {
+    const comment = await database.comments.findUnique({
+        where: { id: req.params.commentId }
+    });
+    if (!comment) {
+        return res.sendStatus(404);
+    }
+
+    if (comment.userId === res.locals.session.userId) {
+        return res.status(403).json({ error: true, message: "You didn't liked this comment" });
+    }
+
+    const updated = await database.comments.update({
+        where: { id: req.params.commentId },
+        data: {
+            likes: { decrement: 1 }
+        }
+    });
+
+    return res.json(updated);
+});
+
 CommentsRouter.patch("/:id/:commentId", auth, validate({ body: CommentsSchema }), async (req, res) => {
     const { content } = req.body;
     const comment = await database.comments.findUnique({
