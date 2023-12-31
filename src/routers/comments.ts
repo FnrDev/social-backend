@@ -5,22 +5,6 @@ import { CommentsSchema } from '../validations/comments';
 import { database } from '../base/prisma';
 export const CommentsRouter = Router();
 
-CommentsRouter.get("/:id", async (req, res) => {
-    const comments = await database.comments.findMany({
-        where: { postId: req.params.id },
-        // for now only return 25 comments
-        // TODO: use pagantion
-        take: 25,
-        include: {
-            user: {
-                select: { name: true, id: true }
-            }
-        }
-    });
-
-    return res.json(comments);
-})
-
 CommentsRouter.post("/:id", auth, validate({ body: CommentsSchema }), async (req, res) => {
     const { content } = req.body;
 

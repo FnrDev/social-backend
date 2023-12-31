@@ -17,6 +17,7 @@ model User {
   email        String     @unique
   phone_number String     @unique
   createdAt    DateTime   @default(now())
+  avatar       String?
   Session      Session[]
   posts        Post[]
   comments     Comments[]
@@ -35,12 +36,13 @@ model Session {
 }
 
 model Post {
-  id          String   @id
+  id          String     @id
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  description String   @db.VarChar(255)
-  likes       Int      @default(0)
-  createdAt   DateTime @default(now())
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  description String     @db.VarChar(255)
+  likes       Int        @default(0)
+  createdAt   DateTime   @default(now())
+  commnets    Comments[]
 
   @@map(name: "posts")
 }
@@ -48,6 +50,7 @@ model Post {
 model Comments {
   id        String   @id @default(uuid())
   postId    String
+  post      Post     @relation(fields: [postId], references: [id])
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   content   String   @db.VarChar(255)

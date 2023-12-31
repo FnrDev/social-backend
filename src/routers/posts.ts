@@ -11,10 +11,25 @@ export const PostsRouter = Router();
 PostsRouter.get("/", auth, async (req, res) => {
     const userPosts = await database.post.findMany({
         where: { userId: res.locals.session.userId },
+        include: {
+            commnets: {
+                include: {
+                    user: {
+                        select: { name: true, id: true, avatar: true }
+                    }
+                }
+            }
+        }
     });
-    const postsIds = userPosts.map(post => post.id);
+    const data = [];
+    for (const post of userPosts) {
+        data.push({
+            ...post,
+            image: `https://cdn.fnrdev.tech/authy/${post.id}`
+        })
+    }
 
-    return res.json(postsIds.map(id => `https://cdn.fnrdev.tech/authy/${id}`));
+    return res.json(data)
 })
 
 PostsRouter.post("/", auth, validate({ body: PostsSchema }), async (req, res) => {
