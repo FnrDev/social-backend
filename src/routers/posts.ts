@@ -14,7 +14,7 @@ PostsRouter.get("/", auth, async (req, res) => {
     });
     const postsIds = userPosts.map(post => post.id);
 
-    return res.json(postsIds.map(id => `https://fnrdev.tech/authy/${id}`));
+    return res.json(postsIds.map(id => `https://cdn.fnrdev.tech/authy/${id}`));
 })
 
 PostsRouter.post("/", auth, validate({ body: PostsSchema }), async (req, res) => {
