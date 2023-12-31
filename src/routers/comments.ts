@@ -57,7 +57,7 @@ CommentsRouter.post("/:id/:commentId/likes", auth, async (req, res) => {
     return res.json(updated);
 });
 
-CommentsRouter.delete("/:id/:commentId/unlike", auth, async (req, res) => {
+CommentsRouter.delete("/:id/:commentId/likes", auth, async (req, res) => {
     const comment = await database.comments.findUnique({
         where: { id: req.params.commentId }
     });
