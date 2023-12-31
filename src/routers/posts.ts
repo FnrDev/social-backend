@@ -3,17 +3,10 @@ import { PostsSchema } from '../validations/posts'
 import validate from '../middlewares/validate';
 import { database } from '../base/prisma';
 import auth from '../middlewares/auth';
-import S3 from 'aws-sdk/clients/s3';
 import { randomUUID } from 'crypto';
 import fileUpload from 'express-fileupload';
+import { bucket } from '../base/aws';
 export const PostsRouter = Router();
-
-const bucket = new S3({
-    endpoint: process.env.AWS_S3_ENDPOINT,
-    signatureVersion: "v4",
-    secretAccessKey: process.env.AWS_S3_SECRET,
-    accessKeyId: process.env.AWS_S3_ACCESS_KEY
-})
 
 PostsRouter.get("/", auth, async (req, res) => {
     const userPosts = await database.post.findMany({
