@@ -17,6 +17,7 @@ model User {
   email        String     @unique
   phone_number String     @unique
   createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
   avatar       String?
   Session      Session[]
   posts        Post[]
