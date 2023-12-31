@@ -12,10 +12,18 @@ UserRouter.get("/@me", auth, async (req, res) => {
 })
 
 UserRouter.put("/@me", auth, validate({ body: UserSchema }), async (req, res) => {
-    const updated = await database.user.update({
-        where: { id: res.locals.session.userId },
-        data: { ...req.body }
-    });
-
-    return res.json(updated);
+    try {
+        const updated = await database.user.update({
+            where: { id: res.locals.session.userId },
+            data: { ...req.body }
+        });
+    
+        return res.json(updated);
+    } catch (err: any) {
+        console.error(err);
+        // deplicted values in unique field
+        if (err.code === "P2002") {
+            return res.status(400).json({ error: true, message: "User with phone number or email already exists" });
+        }
+    }
 })
