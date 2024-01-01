@@ -13,7 +13,8 @@ CommentsRouter.post("/:id", auth, validate({ body: CommentsSchema }), async (req
             postId: req.params.id,
             userId: res.locals.session.userId,
             content
-        }
+        },
+        include: { likes: true }
     });
 
     return res.json(comment);
@@ -21,42 +22,63 @@ CommentsRouter.post("/:id", auth, validate({ body: CommentsSchema }), async (req
 
 CommentsRouter.post("/:id/:commentId/likes", auth, async (req, res) => {
     const comment = await database.comments.findUnique({
-        where: { id: req.params.commentId }
+        where: { id: req.params.commentId },
+        include: { likes: true }
     });
     if (!comment) {
         return res.sendStatus(404);
     }
 
-    if (comment.userId === res.locals.session.userId) {
-        return res.status(403).json({ error: true, message: "You can't like your own comment" });
+    // user already like the comment
+    if (comment.likes.some(like => like.userId === res.locals.session.userId)) {
+        return res.status(400).json({ error: true, message: "You already liked this comment" });
     }
 
     const updated = await database.comments.update({
         where: { id: req.params.commentId },
         data: {
-            likes: { increment: 1 }
+            likes: {
+                create: {
+                    userId: res.locals.session.userId
+                }
+            }
+        },
+        // TODO: move liked users into another route
+        include: {
+            likes: {
+                include: {
+                    user: {
+                        select: { id: true, name: true, avatar: true }
+                    }
+                }
+            }
         }
     });
 
     return res.json(updated);
 });
 
-CommentsRouter.delete("/:id/:commentId/likes", auth, async (req, res) => {
+CommentsRouter.delete("/:id/:commentId/likes/:likeId", auth, async (req, res) => {
     const comment = await database.comments.findUnique({
-        where: { id: req.params.commentId }
+        where: { id: req.params.commentId },
+        include: { likes: true }
     });
     if (!comment) {
         return res.sendStatus(404);
     }
 
-    if (comment.userId === res.locals.session.userId) {
+    if (!comment.likes.some(like => like.userId === res.locals.session.userId)) {
         return res.status(403).json({ error: true, message: "You didn't liked this comment" });
     }
 
     const updated = await database.comments.update({
         where: { id: req.params.commentId },
         data: {
-            likes: { decrement: 1 }
+            likes: {
+                delete: {
+                    id: req.params.likeId
+                }
+            }
         }
     });
 

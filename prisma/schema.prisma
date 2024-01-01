@@ -12,18 +12,19 @@ datasource db {
 }
 
 model User {
-  id           String     @id @default(uuid())
-  name         String
-  email        String     @unique
-  phone_number String     @unique
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  avatar       String?
-  Session      Session[]
-  posts        Post[]
-  comments     Comments[]
-  media        Media[]
-  likes        Likes[]
+  id             String         @id @default(uuid())
+  name           String
+  email          String         @unique
+  phone_number   String         @unique
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  avatar         String?
+  Session        Session[]
+  posts          Post[]
+  comments       Comments[]
+  media          Media[]
+  likes          PostLikes[]
+  comments_likes CommentLikes[]
 
   @@map(name: "users")
 }
@@ -38,31 +39,31 @@ model Session {
 }
 
 model Post {
-  id          String     @id
+  id          String      @id
   userId      String
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  description String     @db.VarChar(255)
-  likes       Likes[]
-  createdAt   DateTime   @default(now())
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  description String      @db.VarChar(255)
+  likes       PostLikes[]
+  createdAt   DateTime    @default(now())
   commnets    Comments[]
 
   @@map(name: "posts")
 }
 
 model Comments {
-  id        String   @id @default(uuid())
+  id        String         @id @default(uuid())
   postId    String
-  post      Post     @relation(fields: [postId], references: [id])
+  post      Post           @relation(fields: [postId], references: [id])
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  content   String   @db.VarChar(255)
-  likes     Int      @default(0)
-  createdAt DateTime @default(now())
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String         @db.VarChar(255)
+  likes     CommentLikes[]
+  createdAt DateTime       @default(now())
 
   @@map(name: "comments")
 }
 
-model Likes {
+model PostLikes {
   id        String   @id @default(uuid())
   postId    String
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
@@ -71,6 +72,17 @@ model Likes {
   createdAt DateTime @default(now())
 
   @@map(name: "likes")
+}
+
+model CommentLikes {
+  id        String   @id @default(uuid())
+  commentId String
+  comment   Comments @relation(fields: [commentId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@map(name: "comments_likes")
 }
 
 model Media {
