@@ -32,6 +32,72 @@ PostsRouter.get("/", auth, async (req, res) => {
     return res.json(data)
 })
 
+PostsRouter.put("/:id/likes", auth, async (req, res) => {
+    const post = await database.post.findUnique({
+        where: { id: req.params.id },
+        include: { likes: true }
+    });
+    if (!post) {
+        return res.sendStatus(404);
+    }
+
+    // user already liked the post
+    if (post.likes.some(likes => likes.userId === res.locals.session.userId)) {
+        return res.status(401).json({ error: true, message: "You already liked the post" });
+    }
+
+    const updated = await database.post.update({
+        where: { id: req.params.id },
+        data: {
+            likes: {
+                create: {
+                    userId: res.locals.session.userId
+                }
+            }
+        },
+        include: {
+            likes: {
+                include: {
+                    user: {
+                        select: { id: true, name: true, avatar: true }
+                    }
+                }
+            },
+        }
+    });
+
+    return res.json(updated);
+})
+
+PostsRouter.delete("/:id/likes/:likeId", auth, async (req, res) => {
+    const post = await database.post.findUnique({
+        where: { id: req.params.id },
+        include: { likes: true }
+    });
+    if (!post) {
+        return res.sendStatus(404);
+    }
+
+    // user didn't like the post, so we can't remove something that don't exist
+    if (!post.likes.some(like => like.userId === res.locals.session.userId)) {
+        return res.status(401).json({ error: true, message: "You didn't like this post" });
+    }
+
+    const updated = await database.post.update({
+        where: { id: req.params.id },
+        data: {
+            likes: {
+                delete: {
+                    id: req.params.likeId
+                }
+            }
+        },
+        include: { likes: true }
+    });
+
+    return res.json(updated);
+})
+
 PostsRouter.post("/", auth, validate({ body: PostsSchema }), async (req, res) => {
     // validations to check if file in body
     if (!req.files || Object.keys(req.files).length === 0) {

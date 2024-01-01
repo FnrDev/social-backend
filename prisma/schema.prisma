@@ -23,6 +23,7 @@ model User {
   posts        Post[]
   comments     Comments[]
   media        Media[]
+  likes        Likes[]
 
   @@map(name: "users")
 }
@@ -41,7 +42,7 @@ model Post {
   userId      String
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   description String     @db.VarChar(255)
-  likes       Int        @default(0)
+  likes       Likes[]
   createdAt   DateTime   @default(now())
   commnets    Comments[]
 
@@ -59,6 +60,17 @@ model Comments {
   createdAt DateTime @default(now())
 
   @@map(name: "comments")
+}
+
+model Likes {
+  id        String   @id @default(uuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@map(name: "likes")
 }
 
 model Media {
