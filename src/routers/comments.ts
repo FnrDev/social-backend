@@ -3,7 +3,23 @@ import auth from '../middlewares/auth';
 import validate from '../middlewares/validate';
 import { CommentsSchema } from '../validations/comments';
 import { database } from '../base/prisma';
+import pagination from '../utils/pagination';
 export const CommentsRouter = Router();
+
+CommentsRouter.get("/:id/:commentId/likes", auth, async (req, res) => {
+    const comment = await database.commentLikes.findMany({
+        where: { commentId: req.params.commentId },
+        ...(pagination(req.query.page as string, req.query.limit as string)),
+        include: {
+            user: {
+                select: { id: true, name: true, avatar: true }
+            }
+        }
+    });
+    const users = comment.map(c => c.user)
+
+    return res.json(users);
+})
 
 CommentsRouter.post("/:id", auth, validate({ body: CommentsSchema }), async (req, res) => {
     const { content } = req.body;
@@ -40,16 +56,6 @@ CommentsRouter.post("/:id/:commentId/likes", auth, async (req, res) => {
             likes: {
                 create: {
                     userId: res.locals.session.userId
-                }
-            }
-        },
-        // TODO: move liked users into another route
-        include: {
-            likes: {
-                include: {
-                    user: {
-                        select: { id: true, name: true, avatar: true }
-                    }
                 }
             }
         }

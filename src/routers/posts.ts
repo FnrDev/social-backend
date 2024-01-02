@@ -6,11 +6,13 @@ import auth from '../middlewares/auth';
 import { randomUUID } from 'crypto';
 import fileUpload from 'express-fileupload';
 import { bucket } from '../base/aws';
+import pagination from '../utils/pagination';
 export const PostsRouter = Router();
 
 PostsRouter.get("/", auth, async (req, res) => {
     const userPosts = await database.post.findMany({
         where: { userId: res.locals.session.userId },
+        ...(pagination(req.query.page as string, req.query.limit as string)),
         include: {
             commnets: {
                 include: {
@@ -30,6 +32,21 @@ PostsRouter.get("/", auth, async (req, res) => {
     }
 
     return res.json(data)
+})
+
+PostsRouter.get("/:id/likes", auth, async (req, res) => {
+    const postLikes = await database.postLikes.findMany({
+        where: { postId: req.params.id },
+        ...(pagination(req.query.page as string, req.query.limit as string)),
+        include: {
+            user: {
+                select: { id: true, name: true, avatar: true }
+            }
+        }
+    });
+    const users = postLikes.map(c => c.user);
+
+    return res.json(users);
 })
 
 PostsRouter.put("/:id/likes", auth, async (req, res) => {
@@ -54,15 +71,6 @@ PostsRouter.put("/:id/likes", auth, async (req, res) => {
                     userId: res.locals.session.userId
                 }
             }
-        },
-        include: {
-            likes: {
-                include: {
-                    user: {
-                        select: { id: true, name: true, avatar: true }
-                    }
-                }
-            },
         }
     });
 
