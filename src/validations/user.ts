@@ -5,4 +5,5 @@ export const UserSchema = z.object({
     email: z.string().email().optional(),
     avatar: z.string().regex(/^https:\/\/cdn\.fnrdev\.tech\/.*/).optional(),
     phone_number: z.string().optional(),
+    username: z.string().min(1).max(15).optional()
 }).strict();

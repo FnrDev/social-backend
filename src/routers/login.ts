@@ -14,6 +14,7 @@ LoginRouter.post("/", validate({ body: LoginSchema }), async (req, res) => {
     const user = await database.user.upsert({
         where: { phone_number: req.body.phone_number },
         create: {
+            username: req.body.username,
             phone_number: req.body.phone_number,
             email: req.body.email,
             name: req.body.name

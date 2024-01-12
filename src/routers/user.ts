@@ -23,7 +23,7 @@ UserRouter.put("/@me", auth, validate({ body: UserSchema }), async (req, res) =>
         console.error(err);
         // deplicted values in unique field
         if (err.code === "P2002") {
-            return res.status(400).json({ error: true, message: "User with phone number or email already exists" });
+            return res.status(400).json({ error: true, message: "User with username or phone number or email already exists" });
         }
     }
 })
