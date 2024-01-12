@@ -1,15 +1,15 @@
-import { z } from 'zod';
+import { ZodObject, ZodRawShape, z } from 'zod';
 import { Request, Response, NextFunction } from 'express';
 import { fromZodError } from 'zod-validation-error';
 
-type Schema = {
-    body?: any,
-    params?: any,
-    query?: any
+type Schema<T extends ZodRawShape = any> = {
+    body?: ZodObject<T, any, any>,
+    params?: ZodObject<T, any, any>,
+    query?: ZodObject<T, any, any>
 }
 
 export default function validate(schema: Schema) {
-    return async function (req: Request, res: Response, next: NextFunction) {
+    return function (req: Request, res: Response, next: NextFunction) {
         try {
             z.object(schema).parse({ body: req.body, params: req.params, query: req.query });
             return next();
