@@ -1,9 +1,10 @@
-# Authy 🛡️
+# Social Media Application
 
-Authy is a Node.js authentication server that leverages Express.js for handling HTTP requests, Redis for caching, Prisma as the ORM for database interactions, Zod for input validations, and supports image posts using Amazon AWS S3.
+This Node.js and TypeScript project leverages Express for the backend, AWS for image uploads, Prisma for database interaction, Redis for caching, and Zod for validation. The main features include:
+
 ## Features 🚀
 
-- **Express Server**: Authy is built on top of the Express.js framework, providing a robust and scalable foundation for handling HTTP requests.
+- **Express Server**: Providing a robust and scalable foundation for handling HTTP requests.
 
 - **Redis Cache**: Utilizes Redis as a caching mechanism to improve performance by storing frequently accessed data in memory.
 
@@ -12,6 +13,9 @@ Authy is a Node.js authentication server that leverages Express.js for handling 
 - **Zod Validations**: Employs Zod for input validations, ensuring that incoming data adheres to defined schemas, enhancing security and data integrity.
 
 - **AWS S3 Integration**: Supports image posts by leveraging AWS S3 for efficient storage and retrieval of images.
+- **Posts**: Manage and display posts.
+- **Post Likes**: Allow users to like posts.
+- **Comments**: Enable users to add comments to posts and like other comments as well.
 
 ## Getting Started 🚦
 
