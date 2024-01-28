@@ -7,6 +7,7 @@ import { randomUUID } from 'crypto';
 import fileUpload from 'express-fileupload';
 import { bucket } from '../base/aws';
 import pagination from '../utils/pagination';
+import { posthog } from '../base/posthog';
 export const PostsRouter = Router();
 
 PostsRouter.get("/", auth, async (req, res) => {
@@ -141,6 +142,14 @@ PostsRouter.post("/", auth, validate({ body: PostsSchema }), async (req, res) =>
             }
         })
     ]);
+
+    posthog.capture({
+        distinctId: res.locals.session.userId,
+        event: "post created",
+        properties: {
+            postId: createdPost.id
+        }
+    })
 
     return res.json(createdPost);
 });
