@@ -3,6 +3,7 @@ import { randomBytes } from 'node:crypto'
 import validate from '../middlewares/validate';
 import { LoginSchema } from '../validations/login';
 import { database } from '../base/prisma';
+import { posthog } from '../base/posthog';
 
 export const LoginRouter = Router();
 
@@ -24,6 +25,14 @@ LoginRouter.post("/", validate({ body: LoginSchema }), async (req, res) => {
 
     await database.session.create({
         data: { id: token, userId: user.id }
+    });
+
+    posthog.capture({
+        distinctId: user.id,
+        event: "user logged in",
+        properties: {
+            phone: req.body.phone_number
+        }
     });
 
     return res.json({ token });
